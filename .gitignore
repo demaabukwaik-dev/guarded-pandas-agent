@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editors
+.vscode/
+.idea/
+
+# AI tool files
+.agents/
+
+# Data
+data/*.csv
+
+# Models
+models/*
+!models/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+cat > models/phi_3_5_mini_instruct/README.md << 'EOF'
+# Phi-3.5-mini-instruct
+
+The model weights are not included in this repo (too large for git).
+
+To run the project, download the model into this folder:
+
+    hf download microsoft/Phi-3.5-mini-instruct --local-dir models/phi_3_5_mini_instruct
+
+The project loads it from this path (see MODEL_PATH in src/agent/config.py).
+EOF

@@ -1,0 +1,8 @@
+pandas>=2.0
+streamlit>=1.30
+fastapi>=0.110
+uvicorn>=0.27
+torch>=2.0
+transformers>=4.40
+accelerate>=0.25.0
+bitsandbytes>=0.41.0
