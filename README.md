@@ -122,7 +122,7 @@ works, but inference can take several minutes per question.
 **No GPU?** Open the notebook in
 [Google Colab](https://colab.research.google.com/github/demaabukwaik-dev/guarded-pandas-agent/blob/main/notebook.ipynb)
 select a GPU runtime, and run all cells, it installs the dependencies
-and downloads the model automatically.
+and loads the model from your Google Drive.
 
 The model path is set as `MODEL_PATH` in `src/agent/config.py`. The whole
 project reaches the model through a single `ask_llm(messages)` entry

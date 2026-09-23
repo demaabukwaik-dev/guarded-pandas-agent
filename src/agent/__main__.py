@@ -7,12 +7,11 @@ def main():
     question = input("What would you like to know? ")
     r = solve(question, df)
 
-    if not r.ok:
-        print(f"\n{r.reason}")
+    if isinstance(r, str):
+        print(f"\n{r}")
     else:
         print("\nResult:")
-        print(r.value)
-
+        print(r)
 
 if __name__ == "__main__":
     main()
