@@ -4,7 +4,6 @@ import json
 from agent.llm import ask_llm
 from agent.parsing import extract_json
 from agent.prompts.mapping import build_concept_prompt, build_map_prompt
-from agent.guards import identifier_columns, key_signals_row_count
 
 
 # 1. EXCEPTIONS

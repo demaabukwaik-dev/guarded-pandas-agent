@@ -40,7 +40,7 @@ ALLOWED_BUILTINS = {
                                   # int()/float() in code and the sandbox rejected them
 }
 
-_ROW_COUNT_OPERATION_WORDS = {"count", "number", "num", "how many"}
+
 _AGG_METHODS = {"count", "nunique", "sum", "mean", "size", "min", "max"}
 _LIST_CONVERSIONS = {"tolist", "to_list", "to_dict"}
 
@@ -61,23 +61,13 @@ class PolicyViolation(Exception):
 # _______________________________________________________________________
 
 # Small shared helper functions.
-# - identifier_columns & key_signals_row_count: shared with mapping.py.
+# - identifier_columns: internal use only.
 # - _column_was_aggregated: internal use only.
 
 
 def identifier_columns(df):
     """Columns where every value is unique."""
     return {c for c in df.columns if df[c].is_unique}
-
-
-def key_signals_row_count(concept_key: str) -> bool:
-    """True if the concept key asks for a row count. distinct/unique need a real column,
-    so they return False even though they mention counting."""
-
-    key_lower = concept_key.lower().replace("_", " ")
-    if "distinct" in key_lower or "unique" in key_lower:
-        return False
-    return any(word in key_lower for word in _ROW_COUNT_OPERATION_WORDS)
 
 
 
