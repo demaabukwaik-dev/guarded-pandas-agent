@@ -119,14 +119,14 @@ def classify_request(question, state):
 
     if parts is None:
         ok, err = False, err_detail or "classifier output could not be parsed"
-
-    # A missing or non-text reason would crash the report
-    for p in parts:
-        if not isinstance(p.get("reason"), str):
-            p["reason"] = "no reason given"
-
     else:
         ok, err = validate_parts(question, parts)
+
+        # A missing or non-text reason would crash the report
+        if ok:
+            for p in parts:
+                if not isinstance(p.get("reason"), str):
+                    p["reason"] = "no reason given"
 
     if not ok:
         return _fail_closed(state, question, err)
