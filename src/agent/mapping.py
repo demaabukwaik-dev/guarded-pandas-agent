@@ -60,25 +60,6 @@ def _pre_split_question(question):
     return None, []
 
 
-def _exact_column_in_key(key, columns):
-    """Find a column name that appears exactly in the key.
-    
-    If multiple columns match, return the longest one.
-    Return None if there is no clear match.
-    """
-    k = key.replace("_", " ").lower()
-    hits = [c for c in columns
-            if re.search(rf"\b{re.escape(c.replace('_', ' ').lower())}\b", k)]
-    if not hits:
-        return None
-    longest = max(hits, key=len)
-    l = longest.replace("_", " ").lower()
-    if all(h.replace("_", " ").lower() in l for h in hits):
-        return longest
-    return None
-
-
-
 # 3. BUILD: split the question into concepts, bind each to a column
 # ______________________________________________________________________________________
 
@@ -140,9 +121,10 @@ def _split_and_bind(question, df, state):
 # 4. CORRECT — deterministic fixes to the model's raw map
 # ______________________________________________________________________________________
 
-def _normalise_map(column_map):
+def _normalise_map(column_map, columns):
     """Fix the shape in code instead of asking the model again.
-    Clean extra candidates when a column is already chosen.
+    Drop invented candidates, resolve a single surviving candidate, then
+    clean extra candidates when a column is already chosen.
     """
 
     if not isinstance(column_map, dict):
@@ -157,22 +139,20 @@ def _normalise_map(column_map):
         if not isinstance(cands, list):
             continue
 
+        # A name that is not a real column is not a choice.
+        cands = [c for c in cands if c in columns]
+        entry["candidates"] = cands
+
+        # One surviving candidate is the answer, not a choice.
+        if not col and len(cands) == 1:
+            entry["column"], entry["candidates"], entry["certain"] = cands[0], [], True
+            continue
+
         if col and cands == [col]:
             entry["candidates"] = []
 
         if col and cands and cands != [col]:
             entry["candidates"] = []
-
-
-def _apply_exact_name_rule(column_map, columns):
-    """A key that literally contains a column name is a certain match: the
-    user wrote the name, so the model's hesitation (price vs discounted_price)
-    isn't a real choice. Set the column, clear candidates, mark certain."""
-    for key, entry in column_map.items():
-        col = _exact_column_in_key(key, columns)
-        if col:
-            entry["column"], entry["candidates"], entry["certain"] = col, [], True
-
 
 
 # 5. VALIDATE — structure, then existence, then decision
@@ -311,8 +291,7 @@ def resolve_columns(question, df, state):
     column_map = _split_and_bind(question, df, state)
 
     # 2. correct (deterministic, no model call)
-    _normalise_map(column_map)
-    _apply_exact_name_rule(column_map, columns)
+    _normalise_map(column_map, columns)
 
     # 3. validate (stops on failure)
     kind, reason = validate_column_map(column_map, df)
